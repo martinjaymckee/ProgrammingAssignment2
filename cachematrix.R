@@ -38,6 +38,9 @@ makeCacheMatrix <- function(x = matrix()) {
 ##
 ## Use (with 'm' created by 'makeCacheMatrix()'):
 ##  inv <- cacheSolve(m)                            -- Calculate the inverse
+##  m$set(z)                                        -- Set a new matrix, z
+##  system.time(inv <-cacheSolve(m))                -- Time the first inversion
+##  system.time(inv <-cacheSolve(m))                -- Time the second inversion
 ##  inv %*% m$get()                                 -- Check the inverse is valid
 ##
 cacheSolve <- function(x, ...) {
