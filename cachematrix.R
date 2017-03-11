@@ -37,16 +37,17 @@ makeCacheMatrix <- function(x = matrix()) {
 ##  as the matrix is not reset.
 ##
 ## Use (with 'm' created by 'makeCacheMatrix()'):
-##  inv <- cacheSolve(m)
+##  inv <- cacheSolve(m)                            -- Calculate the inverse
+##  inv %*% m$get()                                 -- Check the inverse is valid
 ##
 cacheSolve <- function(x, ...) {
-  inv <- x$getinv()
-  if(!is.null(inv)) {
-    message("getting cached inverse")
-    return(inv)
-  }
-  data <- x$get()
-  inv <- solve(data, ...)
-  x$setinv(inv)
-  inv
+    # Check if the inverse has is valid and simply return the cached value if it is.
+    inv <- x$getinv()
+    if(!is.null(inv)) return(inv)
+    
+    # If the cached value was NULL, a new inverse needs to be calculated
+    data <- x$get()
+    inv <- solve(data, ...)
+    x$setinv(inv)
+    inv
 }
