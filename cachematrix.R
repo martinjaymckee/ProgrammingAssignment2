@@ -1,15 +1,52 @@
-## Put comments here that give an overall description of what your
-## functions do
+##
+## The functions in this script implement a new matrix-like object that is able to
+##  cache the results of a matrix inversion operation.
+## 
 
-## Write a short comment describing this function
-
+##
+## The 'makeCacheMatrix' function creates a list of functions that are bound to
+##  lexically scoped storage for the matrix and matrix inverse.  This list may be
+##  used to allow caching of inverse calculations.
+##
+## Example:
+##  m <- makeCacheMatrix(matrix(rnorm(9), 3, 3))    -- Create a cache matrix object
+##  m$set(matrix(rnorm(9), 3, 3))                   -- Set a new matrix
+##  m$get()                                         -- Get the current matrix
+##
 makeCacheMatrix <- function(x = matrix()) {
-
+    # Define lexically scoped storage of the matrix and of the inverse
+    mat <- x
+    inv <- NULL
+  
+    # Implement operations on the scoped data
+    set <- function(x) {
+      mat <<- x
+      inv <<- NULL # Always clear the inverse when the matrix is reset
+    }
+    get <- function() mat
+    setinv <- function(x) inv <<- x
+    getinv <- function() inv
+  
+    # Create and return a list which contains the access functions 
+    list(set = set, get = get, setinv = setinv, getinv = getinv)
 }
 
-
-## Write a short comment describing this function
-
+##
+## The 'cacheSolve' function uses lists such as those returned from the 
+##  'makeCacheMatrix' function to cache calculations of the matrix inverse so long
+##  as the matrix is not reset.
+##
+## Use (with 'm' created by 'makeCacheMatrix()'):
+##  inv <- cacheSolve(m)
+##
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+  inv <- x$getinv()
+  if(!is.null(inv)) {
+    message("getting cached inverse")
+    return(inv)
+  }
+  data <- x$get()
+  inv <- solve(data, ...)
+  x$setinv(inv)
+  inv
 }
